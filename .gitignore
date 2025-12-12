@@ -1,0 +1,16 @@
+# Python (para los scripts de sensores)
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+
+# Sistema Operativo
+.DS_Store
+Thumbs.db
+
+# IDEs (Visual Studio Code)
+.vscode/
+
+# Ficheros temporales o de datos que no queremos subir
+*.log
+/data/  # Si usas volúmenes locales grandes
