@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: aravaca-p5  
+data:
+  # 1. Configuración principal (prom.yml)
+  prom.yml: |
+    global:
+      scrape_interval: 2s
+      external_labels:
+        monitor: 'medioambiente_aravaca'
+        app: 'prometheus.aravaca-p5'
+
+    rule_files:
+      - '/etc/prometheus/prom.rules'
+
+    scrape_configs:
+      - job_name: 'aravaca'
+        honor_labels: true
+        honor_timestamps: false
+        static_configs:
+          # Apuntamos al servicio del PushGateway de la Fase 1
+          - targets: ['pushgateway-svc:20000'] 
+
+  # 2. Reglas de cálculo (prom.rules)
+  prom.rules: |
+    groups:
+      - name: temp_media
+        rules:
+        - record: temperatura_media
+          expr: avg(temperatura)
+          labels:
+            job: 'aravaca'
+            unidades: 'centígrados'
+      - name: hum_media
+        rules:
+        - record: humedad_media
+          expr: avg(humedad)
+          labels:
+            job: 'aravaca'
+            unidades: '%'
