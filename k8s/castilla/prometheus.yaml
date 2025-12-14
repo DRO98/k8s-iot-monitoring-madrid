@@ -44,6 +44,6 @@ spec:
     app: prometheus
   ports:
     - protocol: TCP
-      port: 9090
+      port: 20000
       targetPort: 9090
       nodePort: 30008

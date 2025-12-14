@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-aravaca
+  namespace: aravaca-p5
+  annotations:
+    # Esta anotación necesita que el path tenga paréntesis (grupos de captura)
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+  - host: www.madrid.es
+    http:
+      paths:
+      # OJO A ESTA LÍNEA: Es vital poner (/|$)(.*) al final
+      - path: /aravaca(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: prometheus-svc
+            port:
+              number: 20000

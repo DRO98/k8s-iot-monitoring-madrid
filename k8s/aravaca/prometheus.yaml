@@ -21,6 +21,7 @@ spec:
         args:
           - "--config.file=/etc/prometheus/prom.yml"
           - "--storage.tsdb.path=/prometheus/"
+          - "--web.external-url=/aravaca/"
         ports:
         - containerPort: 9090
         volumeMounts:
@@ -44,6 +45,6 @@ spec:
     app: prometheus
   ports:
     - protocol: TCP
-      port: 9090
+      port: 20000
       targetPort: 9090
       nodePort: 30007
