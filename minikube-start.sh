@@ -1,5 +1,14 @@
 #!/bin/bash
-.\venv\Scripts\Activate.ps1    
+
+# Activar entorno virtual (Linux)
+if [ -f "venv/bin/activate" ]; then
+    source venv/bin/activate
+else
+    echo "Creando entorno virtual..."
+    python3 -m venv venv
+    source venv/bin/activate
+fi
+
 pip install -r requirements.txt
 minikube start
 minikube addons enable metrics-server
