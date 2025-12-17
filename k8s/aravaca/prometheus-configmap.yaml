@@ -23,7 +23,6 @@ data:
           # Apuntamos al servicio del PushGateway de la Fase 1
           - targets: ['pushgateway-svc:20000'] 
 
-
   # 2. Reglas de cálculo (prom.rules)
   prom.rules: |
     groups:
