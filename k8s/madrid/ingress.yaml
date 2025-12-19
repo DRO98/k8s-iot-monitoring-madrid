@@ -1,14 +1,14 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-aravaca
-  namespace: aravaca-p5
+  name: ingress-madrid
+  namespace: madrid-p5
 spec:
   rules:
-  - host: www.madrid.es
+  - host: madrid.monitor.es
     http:
       paths:
-      - path: /aravaca
+      - path: /
         pathType: Prefix
         backend:
           service:

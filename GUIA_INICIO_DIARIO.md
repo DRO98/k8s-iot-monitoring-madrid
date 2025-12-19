@@ -1,81 +1,111 @@
 # Guía de Inicio Diario (Workflow de Reinicio)
 
-Sigue estos pasos cada vez que enciendas el ordenador y quieras retomar el trabajo con el proyecto.
+Sigue estos pasos cada vez que enciendas el ordenador para asegurarte de que todo tu entorno se carga correctamente.
 
-## 1. Iniciar Minikube y el Túnel (Requiere Administrador)
+## 1. Arrancar y Actualizar el Clúster (Script Maestro)
 
-Para que los dominios (Ingress) funcionen y puedas acceder a Grafana correctamente, necesitas el túnel.
+En lugar de iniciar Minikube manualmente, usaremos el script de inicio. Esto arranca la máquina virtual y **aplica todos los ficheros YAML** para asegurar que no falte nada (Deployments, Services, Ingress).
 
-1.  Abre una terminal (PowerShell o CMD) **como Administrador**.
-2.  Ejecuta el siguiente comando y **deja la ventana abierta** (no la cierres):
-    ```powershell
-    minikube start
-    minikube tunnel
-    ```
-    *(Nota: Te pedirá confirmación de permisos de red/firewall).*
+1. Abrir Docker
+2. Abre una terminal (VS Code o PowerShell).
 
-## 2. Verificar el Estado de Kubernetes
 
-En una **nueva terminal** (normal, no hace falta admin), verifica que los pods de tu proyecto se han levantado correctamente tras el inicio de Minikube:
-
-```bash
-./kstatus.sh
+**Windows (PowerShell):**
+```powershell
+.\minikube-start.ps1
 ```
-*Deberías ver los pods de `prometheus` y `pushgateway` en estado `Running`.*
 
-> **Nota:** Si por alguna razón el clúster está vacío o da errores, puedes volver a desplegar todo ejecutando `./minikube-start.sh`.
+**Linux/Bash:**
+```bash
+./minikube-start.sh
+```
+
+*Espera a que termine. Al final te mostrará el estado de los pods y abrirá el Dashboard.*
+
+## 2. Activar el Túnel (Requiere Administrador)
+
+El script anterior no lanza el túnel porque este bloquea la terminal. Debes hacerlo aparte.
+
+1. Abre **otra** terminal (PowerShell o CMD) **como Administrador**.
+2. Ejecuta:
+
+```powershell
+minikube tunnel
+```
+*(Nota: Deja esta ventana abierta, no la cierres).*
 
 ## 3. Iniciar Grafana
 
-Como ya creaste el contenedor de Grafana anteriormente, no debes usar `docker run` (eso crearía uno nuevo vacío). Debes "despertar" el que ya tienes.
+Aquí hay dos opciones. Elige la que corresponda:
 
-1.  En la terminal, ejecuta:
-    ```bash
-    docker start grafana
-    ```
-2.  Accede a Grafana en tu navegador: [http://localhost:3000](http://localhost:3000)
+### Opción A: Rutina normal (Si ya configuraste Madrid ayer)
+Simplemente despierta el contenedor:
 
-> **Solo si es la PRIMERA vez absoluta** (o si borraste el contenedor), usa el comando de creación:
-> `docker run -d -p 3000:3000 --add-host castilla.monitor.es:host-gateway --add-host www.madrid.es:host-gateway --name grafana grafana/grafana`
+```bash
+docker start grafana
+```
+
+### Opción B: Si acabas de añadir Madrid hoy (o falla la conexión)
+Debes borrar el contenedor viejo y crear uno nuevo que conozca la dirección de Madrid:
+
+```bash
+docker rm -f grafana
+
+docker run -d -p 3000:3000 --add-host castilla.monitor.es:host-gateway --add-host aravaca.monitor.es:host-gateway --add-host madrid.monitor.es:host-gateway --add-host www.madrid.es:host-gateway --name grafana grafana/grafana
+```
+Accede a Grafana: [http://localhost:3000](http://localhost:3000)
+
+### 3.1. Configuración de Data Sources (Si se pierden)
+
+Si al entrar en Grafana no ves los datos (porque el contenedor se ha recreado), ve a **Connections > Data Sources > Add new data source > Prometheus** y añade estos tres:
+
+1.  **Prometheus Castilla**
+    *   **Name:** `Prometheus-Castilla` (Opcional)
+    *   **Prometheus server URL:** `http://castilla.monitor.es`
+    *   *Click en "Save & Test"*
+
+2.  **Prometheus Aravaca**
+    *   **Name:** `Prometheus-Aravaca` (Opcional)
+    *   **Prometheus server URL:** `http://www.madrid.es/aravaca`
+    *   *Click en "Save & Test"*
+
+3.  **Prometheus Madrid**
+    *   **Name:** `Prometheus-Madrid` (Opcional)
+    *   **Prometheus server URL:** `http://madrid.monitor.es`
+    *   *Click en "Save & Test"*
 
 ## 4. Lanzar los Sensores Simulados
 
-Los sensores no se guardan, son scripts que deben estar corriendo para generar datos.
+Los sensores deben correr en segundo plano para generar tráfico.
 
-1.  En la terminal, ejecuta:
-    *   **Windows (PowerShell):**
-        ```powershell
-        .\lanzar_sensores.ps1
-        ```
-    *   **Linux/Bash:**
-        ```bash
-        ./lanzar_sensores.sh
-        ```
+En la terminal (puedes usar la del Paso 1), ejecuta:
 
-## 5. Resumen de URLs de Acceso
+**Windows (PowerShell):**
+```powershell
+.\lanzar_sensores.ps1
+```
 
-Una vez todo está corriendo:
+**Linux/Bash:**
+```bash
+./lanzar_sensores.sh
+```
+
+## 5. Resumen de URLs de Acceso (Validación Final)
+
+Usa estas URLs para confirmar que las reglas de Ingress y el túnel funcionan bien (requisito del proyecto):
 
 *   **Grafana:** [http://localhost:3000](http://localhost:3000)
-*   **Prometheus (Aravaca):** [http://localhost:30007](http://localhost:30007)
-*   **Prometheus (Castilla):** [http://localhost:30008](http://localhost:30008)
-*   **PushGateway (Aravaca):** [http://localhost:30005](http://localhost:30005)
-*   **PushGateway (Castilla):** [http://localhost:30006](http://localhost:30006)
+*   **Prometheus (Madrid - Fase 4):** [http://madrid.monitor.es/graph](http://madrid.monitor.es/graph)
+*   **Prometheus (Castilla - Host):** [http://castilla.monitor.es/graph](http://castilla.monitor.es/graph)
+*   **Prometheus (Aravaca - Ruta):** [http://www.madrid.es/aravaca/graph](http://www.madrid.es/aravaca/graph)
+
+*(Si estas fallan, revisa que `minikube tunnel` siga corriendo).*
 
 ## 6. Al terminar el día
 
-Para apagar todo ordenadamente:
+Apagado ordenado para evitar corrupción de datos:
 
-1.  Detén los sensores:
-    ```bash
-    ./parar_sensores.sh
-    ```
-2.  Detén Grafana:
-    ```bash
-    docker stop grafana
-    ```
-3.  Detén Minikube:
-    ```bash
-    minikube stop
-    ```
-4.  Ya puedes cerrar la ventana del túnel.
+1.  Detén los sensores: `./parar_sensores.sh`
+2.  Detén Grafana: `docker stop grafana`
+3.  Detén Minikube: `minikube stop`
+4.  Cierra la ventana del túnel (Administrador).
