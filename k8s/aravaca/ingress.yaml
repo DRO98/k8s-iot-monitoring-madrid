@@ -11,7 +11,6 @@ spec:
   - host: www.madrid.es
     http:
       paths:
-      # OJO A ESTA LÍNEA: Es vital poner (/|$)(.*) al final
       - path: /aravaca(/|$)(.*)
         pathType: ImplementationSpecific
         backend:

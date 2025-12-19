@@ -1,3 +1,5 @@
+
+#Nostros en vez de hacerlo con hostpath lo hacemos CloudNative con configmap (mas facil)
 apiVersion: v1
 kind: ConfigMap
 metadata:
