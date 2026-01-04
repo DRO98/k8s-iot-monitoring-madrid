@@ -1,5 +1,6 @@
 version: '3.8'
 
+# No ponemos network_mode: "host" porque queremos mapear solo ciertos hosts, y seria mas complicado configurarlo
 services:
   grafana:
     image: grafana/grafana:latest
@@ -9,4 +10,5 @@ services:
     extra_hosts:
       - "castilla.monitor.es:host-gateway"
       - "www.madrid.es:host-gateway"
+      - "madrid.monitor.es:host-gateway"
     restart: unless-stopped

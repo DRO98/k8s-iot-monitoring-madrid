@@ -74,9 +74,9 @@ Si al entrar en Grafana no ves los datos (porque el contenedor se ha recreado), 
     *   **Prometheus server URL:** `http://madrid.monitor.es`
     *   *Click en "Save & Test"*
 
-## 4. Lanzar los Sensores Simulados
+## 4. Lanzar los Sensores Simulados y Conexiones
 
-Los sensores deben correr en segundo plano para generar tráfico.
+Este script no solo lanza los sensores, sino que también **abre túneles de conexión directa** (port-forwarding) para que puedas ver los datos en tiempo real sin depender del Ingress.
 
 En la terminal (puedes usar la del Paso 1), ejecuta:
 
@@ -84,6 +84,7 @@ En la terminal (puedes usar la del Paso 1), ejecuta:
 ```powershell
 .\lanzar_sensores.ps1
 ```
+*(Se abrirán varias ventanas negras. **No las cierres**, son los túneles y los sensores).*
 
 **Linux/Bash:**
 ```bash
@@ -92,6 +93,15 @@ En la terminal (puedes usar la del Paso 1), ejecuta:
 
 ## 5. Resumen de URLs de Acceso (Validación Final)
 
+### Acceso Directo (Vía script de sensores)
+Estas URLs funcionan gracias a las ventanas que abrió el script `lanzar_sensores.ps1`. Son las más fiables para depurar:
+
+*   **Pushgateway Aravaca:** [http://localhost:30005](http://localhost:30005)
+*   **Pushgateway Castilla:** [http://localhost:30006](http://localhost:30006)
+*   **Prometheus Aravaca:** [http://localhost:30007](http://localhost:30007)
+*   **Prometheus Castilla:** [http://localhost:30008](http://localhost:30008)
+
+### Acceso por Dominio (Vía Ingress)
 Usa estas URLs para confirmar que las reglas de Ingress y el túnel funcionan bien (requisito del proyecto):
 
 *   **Grafana:** [http://localhost:3000](http://localhost:3000)

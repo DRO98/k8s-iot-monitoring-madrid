@@ -106,7 +106,7 @@ if __name__ == "__main__":
                 medidor_temperatura.labels(nombre_sensor, longitud, latitud, 'centígrados').set(random.uniform(float(temp_min), float(temp_max)))
                 medidor_humedad.labels(nombre_sensor, longitud, latitud, '%').set( random.uniform(float(hum_min), float(hum_max)))
                     
-                push_to_gateway(pushGWIP+':'+str(pushGWPort), job=nombreJob, registry=registro)
+                push_to_gateway(pushGWIP+':'+str(pushGWPort), job=nombreJob, registry=registro, grouping_key={'instance': nombre_sensor})
                 time.sleep(int(period))
                 pass
             except BaseException as err:

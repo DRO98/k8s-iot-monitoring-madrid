@@ -14,17 +14,26 @@ data:
       - /etc/prometheus/prom.rules
 
     scrape_configs:
-      - job_name: 'federate'
+      - job_name: 'federate-castilla'
         scrape_interval: 15s
         honor_labels: true
         metrics_path: '/federate'
         params:
           'match[]':
-            - '{job="castilla"}'   # Importante: Que coincida con el job_name que pusiste en los barrios
-            - '{job="aravaca"}'    # Si no estás seguro, usa '{__name__=~".*"}' para traerlo todo
+            - '{job="castilla"}'
         static_configs:
           - targets:
-            - 'prometheus-svc.castilla-p5:20000' # Puerto interno del servicio (no el NodePort)
+            - 'prometheus-svc.castilla-p5:20000'
+
+      - job_name: 'federate-aravaca'
+        scrape_interval: 15s
+        honor_labels: true
+        metrics_path: '/aravaca/federate'
+        params:
+          'match[]':
+            - '{job="aravaca"}'
+        static_configs:
+          - targets:
             - 'prometheus-svc.aravaca-p5:20000'
 
   prom.rules: |

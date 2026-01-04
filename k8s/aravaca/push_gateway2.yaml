@@ -28,6 +28,7 @@ metadata:
   namespace: aravaca-p5
 spec:
   type: NodePort
+  sessionAffinity: ClientIP
   selector:
     app: pushgateway
   ports:
